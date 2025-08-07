@@ -1,3 +1,6 @@
+import sys
+print("Python version:", sys.version)
+
 import logging
 import os
 import json
