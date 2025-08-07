@@ -38,11 +38,14 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     for row in values[1:]:
-        if len(row) > id_index and row[id_index] == user_id:
-            name = row[0]
-            visit_count = row[2]
-            days_left = row[3]
-           await update.message.reply_text(f"👤 {name}\n📅 Відвідувань: {visit_count}\n⏳ Днів до завершення: {days_left}")
+    if len(row) > id_index and row[id_index] == user_id:
+        name = row[0]
+        visit_count = row[2]
+        days_left = row[3]
+        await update.message.reply_text(
+            f"👤 {name}\n📅 Відвідувань: {visit_count}\n⏳ Днів до завершення: {days_left}"
+        )
+        return
 📅 Відвідувань: {visit_count}
 ⏳ Днів до завершення: {days_left}")
             return
