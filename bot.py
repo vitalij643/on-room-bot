@@ -47,7 +47,7 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
         return
-📅 Відвідувань: {visit_count}
+await update.message.reply_text(f"Ім'я: {name}\\nВідвідувань: {visit_count}\\nДнів до завершення: {days_left}")
 ⏳ Днів до завершення: {days_left}")
             return
 
