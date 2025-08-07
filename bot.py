@@ -43,8 +43,9 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         visit_count = row[2]
         days_left = row[3]
         await update.message.reply_text(
-            f"👤 {name}\n📅 Відвідувань: {visit_count}\n⏳ Днів до завершення: {days_left}"
+            f"Ім'я: {name}\nВідвідувань: {visit_count}\nДнів до завершення: {days_left}"
         )
+        return
         return
 📅 Відвідувань: {visit_count}
 ⏳ Днів до завершення: {days_left}")
