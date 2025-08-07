@@ -47,8 +47,7 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
         return
-await update.message.reply_text(f"Ім'я: {name}\\nВідвідувань: {visit_count}\\nДнів до завершення: {days_left}")
-⏳ Днів до завершення: {days_left}")
+await update.message.reply_text(await update.message.reply_text(f"Ім'я: {name}\\nВідвідувань: {visit_count}\\nДнів до завершення: {days_left}")
             return
 
     await update.message.reply_text("Ваш ID не знайдено в таблиці.")
