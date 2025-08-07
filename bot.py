@@ -37,13 +37,13 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("У таблиці не знайдено колонку 'Telegram ID'.")
         return
 
-    for row in values[1:]:
+   for row in values[1:]:
     if len(row) > id_index and row[id_index] == user_id:
         name = row[0]
         visit_count = row[2]
         days_left = row[3]
-        await update.message.reply_text(
-            f"Ім'я: {name}\nВідвідувань: {visit_count}\nДнів до завершення: {days_left}"
+        await update.message.reply_text(f"Ім'я: {name}\nВідвідувань: {visit_count}\nДнів до завершення: {days_left}")
+        return
         )
         return
         return
