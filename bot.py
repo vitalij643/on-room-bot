@@ -1,4 +1,3 @@
-
 import logging
 import os
 import json
@@ -23,7 +22,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Привіт! Я бот танцювальної студії 💃🕺")
+    await update.message.reply_text("Привіт! Я бот танцювальної студії")
 
 # Команда /check
 async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -37,17 +36,14 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("У таблиці не знайдено колонку 'Telegram ID'.")
         return
 
-   for row in values[1:]:
-    if len(row) > id_index and row[id_index] == user_id:
-        name = row[0]
-        visit_count = row[2]
-        days_left = row[3]
-        await update.message.reply_text(f"Ім'я: {name}\nВідвідувань: {visit_count}\nДнів до завершення: {days_left}")
-        return
-        )
-        return
-        return
-await update.message.reply_text(await update.message.reply_text(f"Ім'я: {name}\\nВідвідувань: {visit_count}\\nДнів до завершення: {days_left}")
+    for row in values[1:]:
+        if len(row) > id_index and row[id_index] == user_id:
+            name = row[0]
+            visit_count = row[2]
+            days_left = row[3]
+            await update.message.reply_text(
+                f"Ім'я: {name}\nВідвідувань: {visit_count}\nДнів до завершення: {days_left}"
+            )
             return
 
     await update.message.reply_text("Ваш ID не знайдено в таблиці.")
@@ -60,8 +56,10 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("check", check))
 
-    bot = BotCommand("check", "Перевірити своє відвідування")
-    app.bot.set_my_commands([bot])
+    app.bot.set_my_commands([
+        BotCommand("check", "Перевірити своє відвідування")
+    ])
 
     print("Бот запущено...")
     app.run_polling()
+
