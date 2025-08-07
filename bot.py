@@ -1,30 +1,64 @@
-import telebot
+
+import logging
+import os
+import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import os
+from telegram import Update, BotCommand
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = os.getenv("BOT_TOKEN")
-SHEET_URL = os.getenv("SHEET_URL")
-
-bot = telebot.TeleBot(TOKEN)
-
-# Google Sheets setup
+# Підключення до Google Таблиці
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+creds_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
-sheet = client.open_by_url(SHEET_URL).sheet1
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.reply_to(message, "Привіт! Я бот для перевірки відвідуваності. Напиши /checkin щоб відмітити присутність.")
+# Отримуємо таблицю
+spreadsheet_url = os.getenv("SHEET_URL")
+spreadsheet = client.open_by_url(spreadsheet_url)
+worksheet = spreadsheet.sheet1
 
-@bot.message_handler(commands=['checkin'])
-def checkin(message):
-    user = message.from_user
-    name = f"{user.first_name} {user.last_name or ''}".strip()
-    telegram_id = user.id
+# Логування
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-    sheet.append_row([name, str(telegram_id), "✅", message.date])
-    bot.reply_to(message, "Твій прихід успішно зафіксовано!")
+# Команда /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Привіт! Я бот танцювальної студії 💃🕺")
 
-bot.infinity_polling()
+# Команда /check
+async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.message.from_user.id)
+    values = worksheet.get_all_values()
+
+    header = values[0]
+    id_index = header.index("Telegram ID") if "Telegram ID" in header else None
+
+    if id_index is None:
+        await update.message.reply_text("У таблиці не знайдено колонку 'Telegram ID'.")
+        return
+
+    for row in values[1:]:
+        if len(row) > id_index and row[id_index] == user_id:
+            name = row[0]
+            visit_count = row[2]
+            days_left = row[3]
+            await update.message.reply_text(f"👤 {name}
+📅 Відвідувань: {visit_count}
+⏳ Днів до завершення: {days_left}")
+            return
+
+    await update.message.reply_text("Ваш ID не знайдено в таблиці.")
+
+# Запуск бота
+if __name__ == "__main__":
+    token = os.getenv("BOT_TOKEN")
+    app = ApplicationBuilder().token(token).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("check", check))
+
+    bot = BotCommand("check", "Перевірити своє відвідування")
+    app.bot.set_my_commands([bot])
+
+    print("Бот запущено...")
+    app.run_polling()
